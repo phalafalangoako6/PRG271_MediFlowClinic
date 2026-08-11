@@ -26,7 +26,7 @@ namespace MediFlowClinic
 
             }
         }
-        public string Priority { get; set; }    
+        public PriorityLevel Priority { get; set; }    
         public string Status { get; set; }  
 
     }

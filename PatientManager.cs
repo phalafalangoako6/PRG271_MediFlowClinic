@@ -20,21 +20,9 @@ namespace MediFlowClinic
 
         public void ViewPatients()
         {   //Compare the priority values of patients and swap their positions 
-            for (int i = 0; i < patients.Count -1; i++) //loop moves through the patients
-            {
-                for (int j = i + 1; j < patients.Count; j++) // compares the current patient with the patient after it
-                {
-                    if (GetPriority(patients[j].Priority) < GetPriority(patients[i].Priority)) //Used to compare two patients
-                    {
-                      Patient temp = patients[i];
-                        patients[i] = patients[j];
-                        patients[j] = temp;
-                    }
-                }
+            var ordered = patients.OrderBy(p => p.Priority); //Orders the patients according to priority and stores them in a new list
 
-            }
-
-            foreach (Patient patient in patients)
+            foreach (Patient patient in ordered)
             {
                 Console.WriteLine($"Patient ID: {patient.PatientID}");
                 Console.WriteLine($"Name: {patient.Firstname} {patient.Lastname}");
@@ -56,26 +44,8 @@ namespace MediFlowClinic
             }
             return null; //When there is no patient object to return
         }
-        private int GetPriority(string priority) 
-        {  //Orders patients according to priority
-
-            if (priority.ToLower() == "emergency") // .ToLower converts the input to lowercase before comparing it.
-            {
-                return 1;
-            }
-            else if (priority.ToLower() == "urgent")
-            {
-                return 2;
-            }
-            else
-            {
-                return 3;
-            }
-        }
        
-            
-
-
+       
         public void UpdatePatient(int patientID, string priority, string status)
         {
             Patient patient = SearchPatient(patientID);
