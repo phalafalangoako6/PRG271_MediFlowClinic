@@ -52,7 +52,13 @@ namespace MediFlowClinic
 
             if (patient != null)
             {
-                patient.Priority = priority;
+                // parse priority string into enum; default to Routine on failure
+                if (!Enum.TryParse<PriorityLevel>(priority, true, out PriorityLevel parsedPriority))
+                {
+                    parsedPriority = PriorityLevel.Routine;
+                }
+
+                patient.Priority = parsedPriority;
                 patient.Status = status;
 
                 Console.WriteLine("Patient updated successfully");

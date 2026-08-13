@@ -15,7 +15,7 @@ namespace MediFlowClinic
         public PriorityLevel Priority {  get; set; }
         public String Status { get; private set; }
 
-        public Appointment (int appointmentId, Patient patient, MedicalStaff staff, DateTime scheduledTime, PriorityLevel priority, string status)
+        public Appointment(int appointmentId, Patient patient, MedicalStaff staff, DateTime scheduledTime, PriorityLevel priority)
         {
             AppointmentId = appointmentId;
             Patient = patient;
@@ -27,7 +27,15 @@ namespace MediFlowClinic
 
         public void Complete()
         {
-            if (Status != "Completed")
+            if (Status == "Cancelled")
+                throw new IllegalStatusTransitionException($"Cannot complete appointment {AppointmentId} - it has been cancelled.");
+
+            Status = "Completed";
+        }
+
+        public void Cancel()
+        {
+            if (Status == "Completed")
                 throw new IllegalStatusTransitionException($"Cannot cancel appointment {AppointmentId} - it has already been completed.");
 
             Status = "Cancelled";

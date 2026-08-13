@@ -33,10 +33,10 @@ namespace MediFlowClinic
 
         public Appointment FindAppointment(int appointmentID)
         {
-            Appointment appointment = appointments.FirstOrDefault(a => a.AppointmentID == appointmentID);
+            Appointment appointment = appointments.FirstOrDefault(a => a.AppointmentId == appointmentID);
 
             if (appointment == null)
-                throw new AppointmentNotFoundException($"No appointment found with ID {appointmentID}.");
+                throw new AppointmentNotFound($"No appointment found with ID {appointmentID}.");
 
             return appointment;
         }
@@ -61,7 +61,7 @@ namespace MediFlowClinic
 
             foreach (Appointment a in ordered)
             {
-                Console.WriteLine($"Appointment ID: {a.AppointmentID}");
+                Console.WriteLine($"Appointment ID: {a.AppointmentId}");
                 Console.WriteLine($"Patient: {a.Patient.Firstname} {a.Patient.Lastname}");
                 Console.WriteLine($"Staff: {a.Staff.FirstName} {a.Staff.LastName}");
                 Console.WriteLine($"Time: {a.ScheduledTime}");
