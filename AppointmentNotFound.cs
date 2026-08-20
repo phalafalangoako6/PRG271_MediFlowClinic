@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace MediFlowClinic
 {
-    public class AppointmentNotFound : Exception
+    //custom exception
+    public class AppointmentNotFoundException: Exception
     {
-        public AppointmentNotFound (string message) : base (message) { }
+        public AppointmentNotFoundException (string message) : base (message) { }
     }
 }

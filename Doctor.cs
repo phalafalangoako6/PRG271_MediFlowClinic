@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MediFlowClinic
 {
+    //Inheritance 
     public class Doctor: MedicalStaff 
     {
         public override void PerformDuty()

@@ -8,6 +8,7 @@ namespace MediFlowClinic
 {
     public class Appointment
     {
+        //Encapsulation 
         public int AppointmentId {  get; set; }
         public Patient Patient { get; set; }
         public MedicalStaff Staff { get; set; }

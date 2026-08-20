@@ -10,11 +10,19 @@ namespace MediFlowClinic
     {
         static void Main(string[] args)
         {
+            //create managers tha handle patient and appointments
             PatientManager patientManager = new PatientManager();
             AppointmentManager appointmentManager = new AppointmentManager();
 
+            //Subscribe to appointments events
+            appointmentManager.AppointmentScheduled += AppointmentScheduledHandler;
+            appointmentManager.AppointmentConflict += AppointmentConflictHandler; 
+
+
+
             bool running = true;
 
+            //Display the menu  until the user exits
             while (running)
             {
                 Console.Clear();
@@ -37,6 +45,7 @@ namespace MediFlowClinic
 
                 switch (choice)
                 {
+                    //add patient
                     case "1":
                     {
                         Console.WriteLine("Enter patient ID: ");
@@ -48,9 +57,23 @@ namespace MediFlowClinic
                         Console.Write("Enter Last Name: ");
                         string lastname = Console.ReadLine();
 
-                        Console.Write("Enter Age: ");
-                        int age = Convert.ToInt32(Console.ReadLine());
+                        
+                            //ask for the patient's age which has to be > 0
+                            int age; 
+                            while (true)
+                            {
+                                 Console.Write("Enter Age: ");
+                                 
+                                if(int.TryParse(Console.ReadLine(), out age) && age >= 1)
+                                {
+                                    break;
+                                }
+                                Console.WriteLine("Invalid age. Please enter a valid age ");
 
+                            }
+
+                            
+                            //ask the user to enter patient's priority
                         Console.Write("Enter Priority: (Emergency/Urgent/Routine): ");
                         string input = Console.ReadLine();
 
@@ -61,8 +84,32 @@ namespace MediFlowClinic
                             priorityValue = PriorityLevel.Routine;
                         }
 
-                        Console.Write("Enter Status: ");
-                        string status = Console.ReadLine();
+                        //display available status options
+                        Console.WriteLine("Select Patient Status:");
+                        Console.WriteLine("1. Waiting");
+                        Console.WriteLine("2. In Treatment");
+                        Console.WriteLine("3. Discharged");
+
+                        PatientStatus selectedStatus;
+                            
+                            while (true)
+                            {
+
+                                Console.Write("Enter option: ");
+
+                                if(int.TryParse(Console.ReadLine(), out int statusChoice) && Enum.IsDefined(typeof(PatientStatus), statusChoice))
+                                {
+                                    selectedStatus = (PatientStatus)statusChoice;
+                                    break;
+                                }
+                                Console.WriteLine("Invalid option. Please select 1,2 or 3");
+                            }
+                            //convert selected enum to a string
+                            string status = selectedStatus.ToString();
+
+                          
+                            //create patient
+                     
 
                         Patient patient = new Patient();
 
@@ -71,22 +118,28 @@ namespace MediFlowClinic
                         patient.Lastname = lastname;
                         patient.Age = age;
                         patient.Priority = priorityValue;
-                        patient.Status = status;
+                            patient.Status = status;
 
+                            //add new patient to the PatientManager
                         patientManager.AddPatient(patient);
 
                         Console.WriteLine("Patient added successfully.");
                         break;
                     }
 
+                        //Book appointment
                     case "2":
                     {
                         try
                         {
+                                //ask for patient who needs the appointment
                             Console.Write("Enter Patient ID: ");
                             int patientIDBooking = int.Parse(Console.ReadLine());
-                            Patient bookingPatient = patientManager.SearchPatient(patientIDBooking);
 
+                                //search for patient by patientID 
+                                Patient bookingPatient = patientManager.SearchPatient(patientIDBooking);
+
+                               //stop if the patient does not exist in as our patient
                             if (bookingPatient == null)
                             {
                                 Console.WriteLine("Patient not found.");
@@ -110,30 +163,39 @@ namespace MediFlowClinic
                             // Minimal approach: use a default staff member for booking
                             MedicalStaff someStaffMember = new Doctor { FirstName = "Default", LastName = "Doctor" };
 
+
+                                //Add the appointment using AppointmentManger
                             Appointment appt = appointmentManager.AddAppointment(bookingPatient, someStaffMember, scheduledTime, priority);
                             Console.WriteLine($"Appointment {appt.AppointmentId} booked successfully.");
                         }
+                            //Used to handle appointments conflicts
                         catch (AppointmentConflictException ex)
                         {
                             Console.WriteLine($"Booking failed: {ex.Message}");
                         }
+                            //Habdle invalid number/date input
                         catch (FormatException)
                         {
                             Console.WriteLine("Invalid input format — please check date/ID entries.");
                         }
+                            //handle any errors
                         catch (Exception ex)
                         {
                             Console.WriteLine($"Unexpected error: {ex.Message}");
                         }
                         finally
                         {
+
                             Console.WriteLine("Booking attempt finished.\n");
                         }
                         break;
                     }
 
 
+                        //View patients
                     case "3":
+
+                        //display all patients in the PatientManager
                         patientManager.ViewPatients();
                         break;
 
@@ -170,6 +232,8 @@ namespace MediFlowClinic
                         Console.Write("Enter the new status: ");
                         string newStatus = Console.ReadLine();
 
+
+                        //Send the updated information to PatientManager
                         patientManager.UpdatePatient(updateID, newPriority, newStatus);
                         break;
 
@@ -180,6 +244,8 @@ namespace MediFlowClinic
                         patientManager.RemovePatient(removeID);
                         break;
 
+
+                        //View medical staff
                     case "7":
                         Doctor doctor = new Doctor();
                         doctor.FirstName = "John";
@@ -242,5 +308,18 @@ namespace MediFlowClinic
            
 
         }
+
+        //Appointment scheduled event handler 
+        static void AppointmentScheduledHandler(object sender, AppointmentEventArgs e)
+        {
+            Console.WriteLine(
+                $"EVENT: Appointment {e.Appointment.AppointmentId} was scheduled.");
+        }
+        static void AppointmentConflictHandler (object sender, AppointmentEventArgs e)
+        {
+            Console.WriteLine("EVENT: Appointment conflict detected!");
+        }
+
+
     }
 }

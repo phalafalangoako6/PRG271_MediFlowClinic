@@ -5,12 +5,15 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+
 
 namespace MediFlowClinic
 {
-    public class PatientManager
+    //Interface implementation
+    public class PatientManager: IPatientService
     { 
-        // the list is kept private so that the access to the patient records can be controlled through manager's methods
+        // Encapsulation the list is kept private so that the access to the patient records can be controlled through manager's methods
       private List<Patient> patients = new List<Patient>(); //creates a list that stores patients, PatientManager controls the list through methods
       
         public void AddPatient(Patient patient)
@@ -33,6 +36,7 @@ namespace MediFlowClinic
             }
         }
 
+        //Searches the patient collection using the ID
         public Patient SearchPatient(int patientID)
         {
             foreach (Patient patient in patients)
@@ -85,6 +89,30 @@ namespace MediFlowClinic
             }
 
         }
+
+        //Multithreading 
+
+        public void StartMonitoring()
+        {
+            Task.Run(() =>
+            {
+                Console.WriteLine("\nPatient monitoring started...");
+
+                for (int i = 0; i < 3; i++)
+                {
+                    foreach (Patient patient in patients)
+                    {
+                        Console.WriteLine(
+                            $"Monitoring patient {patient.Firstname} {patient.Lastname}...");
+                    }
+                    Thread.Sleep(2000);
+                }
+                Console.WriteLine("Patient monitoring finished.");
+
+            });
+
+        }
+
 
 
     }
